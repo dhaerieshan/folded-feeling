@@ -1,0 +1,201 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💗 A Little Magic 💗</title>
+<style>
+html,body{margin:0;padding:0;height:100%;font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#ffd6e0,#fff0d6);overflow:hidden;}
+.hearts{position:fixed;top:0;left:0;width:100%;height:100%;overflow:hidden;z-index:0;}
+.heart{position:absolute;color:#ff6fa3;animation:float 10s linear infinite;opacity:0.6;font-size:20px;}
+@keyframes float{0%{transform:translateY(100vh) scale(0.5);}100%{transform:translateY(-10vh) scale(1);}}
+.content{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;height:100%;color:#6a1e55;padding:20px;}
+.typing{font-size:1.2rem;max-width:600px;line-height:1.6;white-space:pre-line;}
+#final{display:none;flex-direction:column;align-items:center;margin-top:30px;}
+button{margin:10px;padding:12px 24px;border:none;border-radius:30px;background:#ff6fa3;color:white;font-size:1rem;cursor:pointer;transition:0.3s;}
+button:hover{background:#ff8fb5;}
+#yes.glow{box-shadow:0 0 20px 5px #ffb3c6;transform:scale(1.2);}
+@media(max-width:600px){.typing{font-size:1rem;}}
+</style>
+</head>
+<body>
+
+{% if success %}
+<!-- Proposal content -->
+<div class="hearts" id="hearts"></div>
+<div class="content">
+  <div class="typing" id="typing"></div>
+  <div id="final">
+    <h2>Will you be mine? 💞</h2>
+    <div>
+      <button id="yes">Yes 💖</button>
+      <button id="no">No 😅</button>
+    </div>
+  </div>
+</div>
+<audio src="{% static 'your_music.mp3' %}" autoplay loop></audio>
+<script>
+// ---------- Message to type ----------
+const message = `Sometimes the universe works in quiet, funny ways.
+
+We meet someone, and everything just... clicks.
+
+The small talks start to feel like home.
+
+The coincidences pile up — the habits, the quirks, the weird little things no one else gets — and suddenly it’s like staring at a mirror that laughs the same way you do.
+
+It feels unreal, like some quiet magic decided to have fun for once.
+
+Maybe it’s new. Maybe it’s unexpected.
+But it’s rare… and real.
+
+And maybe — just maybe — this is what people mean when they talk about *meant to be.*`;
+
+// ---------- Floating hearts ----------
+const heartsContainer = document.getElementById("hearts");
+for(let i=0;i<30;i++){
+  const h=document.createElement("div");
+  h.classList.add("heart");
+  h.textContent="💗";
+  h.style.left=Math.random()*100+"%";
+  h.style.animationDuration=(6+Math.random()*6)+"s";
+  h.style.fontSize=(16+Math.random()*20)+"px";
+  h.style.animationDelay=Math.random()*5+"s";
+  heartsContainer.appendChild(h);
+}
+
+// ---------- Typing effect ----------
+const typingEl = document.getElementById("typing");
+let idx=0;
+function type(){
+  if(idx<message.length){
+    typingEl.textContent+=message.charAt(idx);
+    idx++;
+    setTimeout(type,40);
+  } else {
+    document.getElementById("final").style.display="flex";
+  }
+}
+window.onload = type;
+
+// ---------- Buttons ----------
+const yesBtn = document.getElementById("yes");
+const noBtn = document.getElementById("no");
+
+// No button dodges on hover
+noBtn.addEventListener("mouseover", ()=>{
+  noBtn.style.position = "absolute";
+  noBtn.style.left = Math.random()*70 + 10 + "%";
+  noBtn.style.top = Math.random()*70 + 10 + "%";
+});
+
+// ---------- Confetti ----------
+function createConfetti(){
+  for(let i=0;i<200;i++){
+    const c = document.createElement("div");
+    c.textContent = "🎉";
+    c.style.position="absolute";
+    c.style.left=Math.random()*100+"%";
+    c.style.top="-5%";
+    c.style.fontSize=(10+Math.random()*30)+"px";
+    c.style.opacity=0.7;
+    document.body.appendChild(c);
+    let fall = setInterval(()=>{
+      let top = parseFloat(c.style.top);
+      if(top < 100) c.style.top = (top + Math.random()*3) + "%";
+      else { clearInterval(fall); c.remove(); }
+    }, 20);
+  }
+}
+
+// ---------- Heart explosion ----------
+function heartExplosion(){
+  for(let i=0;i<50;i++){
+    const heart = document.createElement("div");
+    heart.textContent = "💗";
+    heart.style.position = "absolute";
+    heart.style.left = yesBtn.offsetLeft + "px";
+    heart.style.top = yesBtn.offsetTop + "px";
+    heart.style.fontSize = (15 + Math.random()*20)+"px";
+    heart.style.opacity = 1;
+    document.body.appendChild(heart);
+
+    let angle = Math.random()*2*Math.PI;
+    let speed = Math.random()*5 + 2;
+    let x=0, y=0;
+
+    let move = setInterval(()=>{
+      x += Math.cos(angle)*speed;
+      y += Math.sin(angle)*speed;
+      heart.style.transform = `translate(${x}px, ${y}px)`;
+      heart.style.opacity -= 0.02;
+      if(heart.style.opacity <= 0){
+        clearInterval(move);
+        heart.remove();
+      }
+    }, 20);
+  }
+}
+
+// ---------- Magical popup ----------
+function showPopup(){
+  const popup = document.createElement("div");
+  popup.textContent = "💖 We’re meant to be! 💖";
+  popup.style.position = "fixed";
+  popup.style.top = "50%";
+  popup.style.left = "50%";
+  popup.style.transform = "translate(-50%, -50%) scale(0)";
+  popup.style.fontSize = "2rem";
+  popup.style.color = "#ff6fa3";
+  popup.style.background = "rgba(255, 255, 255, 0.8)";
+  popup.style.padding = "20px 40px";
+  popup.style.borderRadius = "20px";
+  popup.style.textAlign = "center";
+  popup.style.zIndex = "9999";
+  popup.style.transition = "all 0.5s ease-out";
+  document.body.appendChild(popup);
+
+  setTimeout(()=>{ popup.style.transform = "translate(-50%, -50%) scale(1)"; }, 50);
+  setTimeout(()=>{ popup.style.opacity = 0; popup.style.transform = "translate(-50%, -50%) scale(1.5)"; }, 2500);
+  setTimeout(()=>{ popup.remove(); }, 3500);
+}
+
+// ---------- Celebration ----------
+function celebrate(){
+  createConfetti();
+  heartExplosion();
+  showPopup();
+
+  // Animate background
+  document.body.style.transition = "background 2s";
+  document.body.style.background = "linear-gradient(135deg,#ff9fc1,#fff0a0)";
+
+  // Play music
+  const music = document.getElementById("bgmusic");
+  if(music.paused) music.play();
+}
+
+// ---------- Yes button click ----------
+yesBtn.addEventListener("click", ()=>{
+  yesBtn.textContent = "Yay! 💞";  // Change label
+  celebrate(); // trigger celebration
+});
+
+</script>
+{% else %}
+<!-- Code input form -->
+<div class="content" style="text-align:center;margin-top:50px;">
+  <form method="POST">
+    {% csrf_token %}
+    <h2>Enter the secret code 💫</h2>
+    <input name="code" placeholder="Secret code..." required
+           style="padding:10px;border-radius:10px;border:1px solid #ff6fa3;width:200px;text-align:center;">
+    <button type="submit" style="margin-top:10px;padding:8px 20px;background:#ff6fa3;color:white;border:none;border-radius:10px;">Unlock</button>
+    {% if error %}<p style="color:red;">{{ error }}</p>{% endif %}
+  </form>
+</div>
+{% endif %}
+
+</body>
+</html>
