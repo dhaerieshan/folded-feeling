@@ -16,26 +16,36 @@ def admin_page(request):
 
 
 def proposal_page(request):
-    # Check if user already has valid cookie
-    stored_token = request.COOKIES.get('lover_token')
-    if stored_token:
-        # User is already authorized via cookie
+    db_code = AccessCode.objects.last()
+    stored_token = request.COOKIES.get("lover_token")
+
+    # ---------- Case 1: No active code exists ----------
+    if not db_code:
+        return render(request, "proposal.html", {"not_meant_for_you": True})
+
+    # ---------- Case 2: User already has correct token ----------
+    if stored_token and db_code.token == stored_token:
         return render(request, "proposal.html", {"success": True})
 
-    db_code = AccessCode.objects.last()
-
+    # ---------- Case 3: User is submitting code ----------
     if request.method == "POST":
         entered_code = request.POST.get("code")
-        if db_code and entered_code == db_code.code:
-            # Generate a unique token for this device
+
+        if entered_code == db_code.code:
+            # Generate one-time device token
             token = str(uuid.uuid4())
+            db_code.token = token
+            db_code.save()
+
             response = render(request, "proposal.html", {"success": True})
             response.set_cookie("lover_token", token, max_age=60*60*24*30)
-            # Delete code so it can't be reused
-            db_code.delete()
-            return response
-        else:
-            return render(request, "proposal.html", {"error": "Invalid or expired code 😔"})
 
-    # No valid cookie and no code entered yet
-    return render(request, "proposal.html", {"not_meant": True})
+            # Delete code after use
+            db_code.delete()
+
+            return response
+
+        return render(request, "proposal.html", {"error": "Invalid or expired code 😔"})
+
+    # ---------- Case 4: Code exists but not submitted yet ----------
+    return render(request, "proposal.html", {"enter_code": True})

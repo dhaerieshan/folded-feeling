@@ -184,16 +184,25 @@ yesBtn.addEventListener("click", ()=>{
 
 </script>
 {% else %}
-<!-- Code input form -->
 <div class="content" style="text-align:center;margin-top:50px;">
-  <form method="POST">
-    {% csrf_token %}
-    <h2>Enter the secret code 💫</h2>
-    <input name="code" placeholder="Secret code..." required
-           style="padding:10px;border-radius:10px;border:1px solid #ff6fa3;width:200px;text-align:center;">
-    <button type="submit" style="margin-top:10px;padding:8px 20px;background:#ff6fa3;color:white;border:none;border-radius:10px;">Unlock</button>
-    {% if error %}<p style="color:red;">{{ error }}</p>{% endif %}
-  </form>
+
+  {% if not_meant %}
+      <h2 style="color:#d14f6d;">This message is not meant for you 💔</h2>
+      <p style="margin-top:10px;font-size:1.2rem;color:#6a1e55;">
+        The sender has not shared a code yet.
+      </p>
+  {% else %}
+      <!-- Code input form -->
+      <form method="POST">
+        {% csrf_token %}
+        <h2>Enter the secret code 💫</h2>
+        <input name="code" placeholder="Secret code..." required
+               style="padding:10px;border-radius:10px;border:1px solid #ff6fa3;width:200px;text-align:center;">
+        <button type="submit" style="margin-top:10px;padding:8px 20px;background:#ff6fa3;color:white;border:none;border-radius:10px;">Unlock</button>
+        {% if error %}<p style="color:red;">{{ error }}</p>{% endif %}
+      </form>
+  {% endif %}
+
 </div>
 {% endif %}
 
